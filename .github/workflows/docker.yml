@@ -24,7 +24,7 @@ jobs:
       # 构建镜像
       - run: docker compose --profile ${{ matrix.profile }} build --progress plain
 
-      # 登录到阿里云容器镜像服务
+      # 登录到阿里云容器镜像服务-
       - name: Log in to Aliyun Container Registry
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin <<<${{ secrets.DOCKER_PASSWORD }} registry.cn-hangzhou.aliyuncs.com
