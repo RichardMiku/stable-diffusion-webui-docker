@@ -27,7 +27,7 @@ jobs:
       # 登录到阿里云容器镜像服务
       - name: Log in to Aliyun Container Registry
         run: |
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} registry.cn-hangzhou.aliyuncs.com
+          docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin <<<${{ secrets.DOCKER_PASSWORD }} registry.cn-hangzhou.aliyuncs.com
 
       # 设置镜像名称并推送
       - name: Set image name and push to Aliyun Container Registry
