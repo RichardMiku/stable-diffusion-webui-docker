@@ -4,9 +4,9 @@ on:
   push:
     branches: master
   pull_request:
-      paths:
-        - docker-compose.yml
-        - services
+    paths:
+      - docker-compose.yml
+      - services
 
 jobs:
   build:
@@ -20,4 +20,21 @@ jobs:
     name: ${{ matrix.profile }}
     steps:
       - uses: actions/checkout@v3
+
+      # 构建镜像
       - run: docker compose --profile ${{ matrix.profile }} build --progress plain
+
+      # 登录到阿里云容器镜像服务
+      - name: Log in to Aliyun Container Registry
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} registry.cn-hangzhou.aliyuncs.com
+
+      # 设置镜像名称并推送
+      - name: Set image name and push to Aliyun Container Registry
+        run: |
+          # 获取构建的镜像ID
+          IMAGE_ID=$(docker images --filter "label=com.docker.compose.project=webui-docker" --filter "label=com.docker.compose.service=${{ matrix.profile }}" --format "{{.ID}}")
+          # 重新标记镜像
+          docker tag $IMAGE_ID registry.cn-hangzhou.aliyuncs.com/rmdoc/stable-diffusion-webui-docker:${{ matrix.profile }}
+          # 推送镜像到阿里云容器镜像服务
+          docker push registry.cn-hangzhou.aliyuncs.com/rmdoc/stable-diffusion-webui-docker:${{ matrix.profile }}
